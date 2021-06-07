@@ -40,6 +40,7 @@ RULES_PATH_DEFAULT_STRING = "(embedded rules)"
 SUPPORTED_FILE_MAGIC = set([b"MZ"])
 BACKEND_VIV = "vivisect"
 BACKEND_SMDA = "smda"
+BACKEND_BINJA = "binja"
 EXTENSIONS_SHELLCODE_32 = ("sc32", "raw32")
 EXTENSIONS_SHELLCODE_64 = ("sc64", "raw64")
 
@@ -417,7 +418,7 @@ def get_extractor(path, format, backend, sigpaths, disable_progress=False):
             smda_report = smda_disasm.disassembleFile(path)
 
         return capa.features.extractors.smda.SmdaFeatureExtractor(smda_report, path)
-    else:
+    elif:
         import capa.features.extractors.viv
 
         with halo.Halo(text="analyzing program", spinner="simpleDots", stream=sys.stderr, enabled=not disable_progress):
@@ -434,6 +435,15 @@ def get_extractor(path, format, backend, sigpaths, disable_progress=False):
                 logger.info("source directory is not writable, won't save intermediate workspace")
 
         return capa.features.extractors.viv.VivisectFeatureExtractor(vw, path)
+    elif backend == 'binja':
+        import binaryninja
+
+        import capa.features.extractors.binja
+
+        bv = binaryninja.binaryview.BinaryViewType.get_view_of_file(path)
+        bv.update_analysis_and_wait()
+
+        return capa.features.extractors.binja.BinjaFeatureExtractor(bv, path)
 
 
 def is_nursery_rule_path(path):
@@ -615,7 +625,7 @@ def install_common_args(parser, wanted=None):
                 "--backend",
                 type=str,
                 help="select the backend to use",
-                choices=(BACKEND_VIV, BACKEND_SMDA),
+                choices=(BACKEND_VIV, BACKEND_SMDA, BACKEND_BINJA),
                 default=BACKEND_VIV,
             )
 
