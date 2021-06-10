@@ -136,15 +136,21 @@ def extract_file_strings(bv):
     offset = 0
 
     while start_addr+offset < end_addr:
-        bnString = bv.get_ascii_string_at(start_addr+offset)
-        if bnString is None:
-            offset += 1
-            continue
-        asciiString = bnString.value
+        try:
+            bnString = bv.get_string_at(start_addr+offset)
+            if bnString is None:
+                offset += 1
+                continue
+            string = bnString.value
 
-        yield String(asciiString), (start_addr+offset)
+            yield String(String), (start_addr+offset)
 
-        offset += bnString.length
+            if bnString.length == 0:
+                offset += 1
+            else:
+                offset += bnString.length
+        except:
+            break
 
 #   """
 #   IDA must load resource sections for this to be complete

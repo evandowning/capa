@@ -164,6 +164,9 @@ class Regex(String):
             if not isinstance(feature, (capa.features.String,)):
                 continue
 
+            if not isinstance(feature.value, (capa.features.String,)):
+                continue
+
             # `re.search` finds a match anywhere in the given string
             # which implies leading and/or trailing whitespace.
             # using this mode cleans is more convenient for rule authors,

@@ -418,7 +418,7 @@ def get_extractor(path, format, backend, sigpaths, disable_progress=False):
             smda_report = smda_disasm.disassembleFile(path)
 
         return capa.features.extractors.smda.SmdaFeatureExtractor(smda_report, path)
-    elif:
+    elif backend == "viv":
         import capa.features.extractors.viv
 
         with halo.Halo(text="analyzing program", spinner="simpleDots", stream=sys.stderr, enabled=not disable_progress):
@@ -435,7 +435,7 @@ def get_extractor(path, format, backend, sigpaths, disable_progress=False):
                 logger.info("source directory is not writable, won't save intermediate workspace")
 
         return capa.features.extractors.viv.VivisectFeatureExtractor(vw, path)
-    elif backend == 'binja':
+    elif backend == "binja":
         import binaryninja
 
         import capa.features.extractors.binja
